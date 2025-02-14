@@ -75,7 +75,7 @@ window.onload = function() {
 
     redClick.src = "./assets/red_click.gif";
     yellowClick.src = "./assets/yellow_click.gif";
-    background.src = "./assets/Backgrounds/Highlight/south.png"
+    background.src = "./assets/Backgrounds/Highlight/South.png"
 
     let imageX = 0, imageY = 0;
     let imgWidth = 222, imgHeight = 142;
