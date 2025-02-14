@@ -10,6 +10,8 @@ window.onload = function() {
     var animationContext;
 
     var ping;
+    var direction = 'North';
+    var highlight = 'No Highlight';
 
 
     ping = document.getElementById('ping').value;
@@ -20,6 +22,19 @@ window.onload = function() {
     pingInputSlider.oninput = ( () => {
         pingInputSliderValue.textContent = pingInputSlider.value + " ms";
         ping = pingInputSlider.value;
+    });
+
+    
+    const directionDropdown = document.getElementById("direction");
+    directionDropdown.onchange = ( () => {
+        updateBackground(directionDropdown.value, highlightDropdown.value);
+        direction = directionDropdown.value;
+    });
+
+    const highlightDropdown = document.getElementById("highlight");
+    highlightDropdown.onchange = ( () => {
+        updateBackground(directionDropdown.value, highlightDropdown.value);
+        highlight = highlightDropdown.value;
     });
 
 
@@ -35,6 +50,7 @@ window.onload = function() {
 
     const redClick = new Image();
     const yellowClick = new Image();
+    const background = new Image();
 
 
     mainCanvas = document.getElementById("mainCanvas");
@@ -46,11 +62,6 @@ window.onload = function() {
     animationCanvas = document.getElementById("animationCanvas");
     animationContext = animationCanvas.getContext("2d");
 
-    mainContext.fillStyle = "white";
-    mainContext.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
-
-    inventoryContext.fillstyle = "black";
-    inventoryContext.fillRect(0, 0, inventoryCanvas.width, inventoryCanvas.height);
 
     rightClickMenu.src = "./assets/healermenu.png";
     rightClickMenuStockUp.src = "./assets/healermenustockup.png";
@@ -64,6 +75,7 @@ window.onload = function() {
 
     redClick.src = "./assets/red_click.gif";
     yellowClick.src = "./assets/yellow_click.gif";
+    background.src = "./assets/Backgrounds/Highlight/south.png"
 
     let imageX = 0, imageY = 0;
     let imgWidth = 222, imgHeight = 142;
@@ -71,6 +83,33 @@ window.onload = function() {
 
     let highlightedOption = "none"; // options are: none, stock up, vial, tofu, worms, walk here, examine, meat, cancel
     const redXOptions = ["stock up", "vial", "tofu", "worms", "examine", "meat"];
+
+
+    background.onload = function () {
+        updateBackground(directionDropdown.value, highlightDropdown.value);
+    }
+
+
+    function updateBackground(direction, highlight) {
+        path = "./assets/Backgrounds/" + highlight + "/" + direction + ".png";
+        background.src = path;
+
+        background.onload = function () {
+            mainContext.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            mainContext.drawImage(background, 0, 0);
+    
+            mainContext.beginPath();
+            mainContext.moveTo(dispenserClickbox[direction][0]['x'], dispenserClickbox[direction][0]['y']);
+            for (let i = 1; i < dispenserClickbox[direction].length; i++) {
+                mainContext.lineTo(dispenserClickbox[direction][i]['x'], dispenserClickbox[direction][i]['y']);
+            }
+            mainContext.closePath();
+    
+            // mainContext.strokeStyle = "red";
+            // mainContext.lineWidth = 0.8;
+            // mainContext.stroke();
+        }
+    }
 
     
     function playRedXAnimation(event) {
@@ -119,17 +158,26 @@ window.onload = function() {
 
     mainCanvas.addEventListener("mousedown", (event) => {
 
+        const rect = animationCanvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = Math.floor(event.clientY - rect.top);
+
         if (event.button === 0) {
 
             animationContext.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
 
-            if (redXOptions.includes(highlightedOption)) {
+            if (imageDrawn === true) {
+                if (redXOptions.includes(highlightedOption)) {
+                    playRedXAnimation(event);
+                }
+                else if (highlightedOption === "walk here") {
+                    playYellowXAnimation(event);
+                }
+            }
+            else if (mainContext.isPointInPath(mouseX, mouseY)) {
                 playRedXAnimation(event);
             }
-            else if (highlightedOption === "walk here") {
-                playYellowXAnimation(event);
-            }
-            
+
             imageDrawn = false;
         }
 
@@ -137,16 +185,18 @@ window.onload = function() {
         else if (event.button === 2) {
 
             if (imageDrawn) return;
-    
-            const rect = animationCanvas.getBoundingClientRect();
-            imageX = event.clientX - rect.left - 110; // 110 is half the width of the right click menu
-            imageY = Math.floor(event.clientY - rect.top);
-    
-            animationContext.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
-            animationContext.drawImage(rightClickMenu, imageX, imageY);
-            highlightedOption = "none";
-            
-            imageDrawn = true;
+
+
+            if (mainContext.isPointInPath(mouseX, mouseY)) {
+                imageX = event.clientX - rect.left - 110; // 110 is half the width of the right click menu
+                imageY = Math.floor(event.clientY - rect.top);
+        
+                animationContext.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
+                animationContext.drawImage(rightClickMenu, imageX, imageY);
+                highlightedOption = "none";
+                
+                imageDrawn = true;
+            }
         }
     });
 
@@ -240,3 +290,11 @@ window.onload = function() {
     })
 
 }
+
+
+
+var dispenserClickbox = 
+    {
+        "North": [{'x': 379, 'y': 334}, {'x': 379, 'y': 318}, {'x': 389, 'y': 294}, {'x': 395, 'y': 289}, {'x': 409, 'y': 293}, {'x': 409, 'y': 295}, {'x': 412, 'y': 331}, {'x': 405, 'y': 338}, {'x': 383, 'y': 337}],
+        "South": [{'x': 381, 'y': 264}, {'x': 380, 'y': 244}, {'x': 386, 'y': 227}, {'x': 396, 'y': 219}, {'x': 403, 'y': 224}, {'x': 410, 'y': 242}, {'x': 413, 'y': 263}, {'x': 407, 'y': 270}, {'x': 384, 'y': 270}]
+    }
