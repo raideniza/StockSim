@@ -285,7 +285,7 @@ window.onload = function() {
     });
 
 
-    mainCanvas.addEventListener("contextmenu", (event) => {
+    document.addEventListener("contextmenu", (event) => {
         event.preventDefault();
     })
 
