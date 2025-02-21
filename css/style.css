@@ -50,6 +50,10 @@ body {
     margin: 10px;
 }
 
+.reset_button {
+    margin: 10px;
+}
+
 .session-info {
     display: flex;
     color: aliceblue;
