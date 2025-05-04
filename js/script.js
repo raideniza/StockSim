@@ -12,6 +12,12 @@ window.onload = function() {
     var inventoryAnimationCanvas;
     var inventoryAnimationContext;
 
+    var tickCounterCanvas;
+    var tickCounterContext;
+
+    var tickCounterEnabled = true;
+    var tickCounterIsWhite = true;
+
     var ping;
 
 
@@ -55,9 +61,21 @@ window.onload = function() {
     const horn = new Image();
     const vial = new Image();
 
+    const tofuText = new Image();
+    const wormsText = new Image();
+    const meatText = new Image();
+    const stockUpText = new Image();
+    const vialText = new Image();
+    const examineText = new Image();
+    const fullInventoryText = new Image();
+
+
     const redClick = new Image();
     const yellowClick = new Image();
     const background = new Image();
+
+    const inventoryTopLeftX = 550;
+    const inventoryTopLeftY = 230;
 
 
     backgroundCanvas = document.getElementById("backgroundCanvas");
@@ -69,14 +87,19 @@ window.onload = function() {
     inventoryBackgroundCanvas = document.getElementById("inventoryBackgroundCanvas");
     inventoryBackgroundContext = inventoryBackgroundCanvas.getContext("2d");
 
+    chatCanvas = document.getElementById("chatCanvas");
+    chatContext = chatCanvas.getContext("2d");
+
     inventoryAnimationCanvas = document.getElementById("inventoryAnimationCanvas");
     inventoryAnimationContext = inventoryAnimationCanvas.getContext("2d");
 
+    tickCounterCanvas = document.getElementById("tickCounterCanvas");
+    tickCounterContext = tickCounterCanvas.getContext("2d");
 
 
-    // inventoryBackgroundContext.strokeStyle = 'black';
-    // inventoryBackgroundContext.lineWidth = 2;
-    // inventoryBackgroundContext.strokeRect(0, 0, inventoryBackgroundCanvas.width, inventoryBackgroundCanvas.height);
+    // chatContext.strokeStyle = 'black';
+    // chatContext.lineWidth = 2;
+    // chatContext.strokeRect(0, 0, chatCanvas.width, chatCanvas.height);
 
 
     rightClickMenu.src = "./assets/healermenu.png";
@@ -95,6 +118,14 @@ window.onload = function() {
     horn.src = "./assets/healerhorn.png";
     vial.src = "./assets/healingvial.png";
 
+    tofuText.src = "./assets/tofutext.png";
+    wormsText.src = "./assets/wormstext.png";
+    meatText.src = "./assets/meattext.png";
+    stockUpText.src = "./assets/stockuptext.png";
+    vialText.src = "./assets/nothinginterestingtext.png";
+    examineText.src = "./assets/examinetext.png";
+    fullInventoryText.src = "./assets/fullinventorytext.png";
+
     redClick.src = "./assets/red_click.gif";
     yellowClick.src = "./assets/yellow_click.gif";
     background.src = "./assets/Backgrounds/No Highlight/North.png"
@@ -105,6 +136,8 @@ window.onload = function() {
 
     let highlightedOption = "stock up"; // options are: none, stock up, vial, tofu, worms, walk here, examine, meat, cancel
     const redXOptions = ["stock up", "vial", "tofu", "worms", "examine", "meat"];
+
+    let selectedOption = "";
 
 
     background.onload = function () {
@@ -176,25 +209,95 @@ window.onload = function() {
     }
 
 
+    function gameTick() {
+        setInterval(() => {
+            switch (selectedOption) {
+                case "stock up":
+                    stock_up();
+                    break;
+                case "vial":
+                    take_vial();
+                    break;
+                case "tofu":
+                    take_tofu();
+                    break;
+                case "worms":
+                    take_worms();
+                    break;
+                case "meat":
+                    take_meat();
+                    break;
+                case "examine":
+                    examine();
+                    break;
+            }
+
+            drawInventory();
+            drawChat();
+
+            selectedOption = "none";
+
+            if (tickCounterEnabled === true) {
+                tickCounterIsWhite = !tickCounterIsWhite;
+                let tickCounterColor = tickCounterIsWhite ? 'white' : 'black';
+                drawTickCounterSquare(tickCounterColor);
+            }
+
+        }, 600);
+    }
+
+
+    function drawTickCounterSquare(color) {
+        tickCounterContext.clearRect(0, 0, 25, 25);
+        tickCounterContext.fillStyle = color;
+        tickCounterContext.fillRect(0, 0, 25, 25);
+    }
+
 
     const rows = 7;
     const cols = 4;
     var inventory = Array.from({ length: rows }, () => Array(cols).fill(""));
     inventory[0][0] = 'h';
 
+    var chat = ["", "", "", "", "", "", "", ""];
+
     // Values to cycle through
     const fillValues = ['t', 'w', 'm'];
     let fillIndex = 0; // Keeps track of which value to insert next
 
-    function hasV() {
+    function customPop(arr) {
+        if (arr.length === 0) return;
+      
+        for (let i = arr.length - 1; i > 0; i--) {
+            arr[i] = arr[i - 1];
+        }
+        arr[0] = "";
+    }
+
+    function arrayIsFull(arr) {
+        return arr.length > 0 && arr.every(item => {
+          if (Array.isArray(item)) {
+            return arrayIsFull(item); // Recursively check subarray
+          }
+          return item !== ""; // Check base case
+        });
+      }
+
+    function hasVial() {
         return inventory.some(row => row.includes('v'));
     }
 
-    function stock_up() {    
+    function stock_up() {
+        customPop(chat);
+        chat[0] = 'stock up';
+        if (arrayIsFull(inventory)) {
+            chat[0] = 'full invy';
+        }
+
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 if (inventory[i][j] === "") {
-                    if (!hasV()) {
+                    if (!hasVial()) {
                         inventory[i][j] = 'v'; // First inserted value is 'v'
                     } else {
                         inventory[i][j] = fillValues[fillIndex];
@@ -204,11 +307,15 @@ window.onload = function() {
             }
         }
         fillIndex = 0;
-        console.table(inventory); // Display the grid
     }
 
     function take_vial() {
-        if (!hasV()) {
+        customPop(chat);
+        chat[0] = 'vial';
+        if (arrayIsFull(inventory)) {
+            chat[0] = 'full invy';
+        }
+        if (!hasVial()) {
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     if (inventory[i][j] === "") {
@@ -216,15 +323,18 @@ window.onload = function() {
                         break;
                     }
                 }
-                if (hasV()) break;
+                if (hasVial()) break;
             }
         }
-        console.table(inventory);
     }
 
     function take_tofu() {
+        customPop(chat);
+        chat[0] = 'tofu';
+        if (arrayIsFull(inventory)) {
+            chat[0] = 'full invy';
+        }
         let num_food_given = 0;
-
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 if (inventory[i][j] === "") {
@@ -236,12 +346,15 @@ window.onload = function() {
             }
             if (num_food_given === 5) break;
         }
-        console.table(inventory);
     }
 
     function take_worms() {
+        customPop(chat);
+        chat[0] = 'worms';
+        if (arrayIsFull(inventory)) {
+            chat[0] = 'full invy';
+        }
         let num_food_given = 0;
-
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 if (inventory[i][j] === "") {
@@ -253,12 +366,15 @@ window.onload = function() {
             }
             if (num_food_given === 5) break;
         }
-        console.table(inventory);
     }
 
     function take_meat() {
+        customPop(chat);
+        chat[0] = 'meat';
+        if (arrayIsFull(inventory)) {
+            chat[0] = 'full invy';
+        }
         let num_food_given = 0;
-
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 if (inventory[i][j] === "") {
@@ -270,7 +386,11 @@ window.onload = function() {
             }
             if (num_food_given === 5) break;
         }
-        console.table(inventory);
+    }
+
+    function examine() {
+        customPop(chat);
+        chat[0] = 'examine';
     }
 
 
@@ -298,6 +418,99 @@ window.onload = function() {
             }
         }
     }
+
+
+    function drawChat() {
+        chatContext.clearRect(0, 0, chatCanvas.width, chatCanvas.height);
+        for (let i = 0; i < chat.length; i++) {
+            const x = 0;
+            let y = 98 - (i * 14);
+            if (chat[i] === 'tofu') {
+                chatContext.drawImage(tofuText, x, y);
+            }
+            else if (chat[i] === 'worms') {
+                chatContext.drawImage(wormsText, x, y);
+            }
+            else if (chat[i] === 'meat') {
+                chatContext.drawImage(meatText, x, y);
+            }
+            else if (chat[i] === 'stock up') {
+                chatContext.drawImage(stockUpText, x, y);
+            }
+            else if (chat[i] === 'vial') {
+                chatContext.drawImage(vialText, x, y);
+            }
+            else if (chat[i] === 'examine') {
+                chatContext.drawImage(examineText, x, y);
+            }
+            else if (chat[i] === 'full invy') {
+                chatContext.drawImage(fullInventoryText, x, y);
+            }
+        }
+    }
+
+
+    function isInventoryClickInDeadSpace(x, y) {
+
+        // let x = 40 + j * 42; (horizontal gap of 6)
+        // let y = 45 + i * 36; (vertical gap of 4)
+
+        // Is the click too high or too to the left
+        if (x < 40 || y < 45) {
+            return true;
+        }
+
+        // Is the click too low or too to the right
+        else if (x > 202 || y > 293) {
+            return true;
+        }
+
+        // Is the click in between different foods
+        if (x % 42 >= 34 && x % 42 <= 39) {
+            if (y % 36 >= 5 && y % 36 <= 8) {
+                return true;
+            }
+        }
+
+        // The click therefore must be on an item
+        return false;
+    }
+
+
+    function deleteFood(x, y) {
+
+        // Get the [x][y] of the food
+        // If inventory[x][y] is 't', 'w', or 'm', continue, otherwise return
+        // Iterate through inventory until the same type of food is found
+        // Replace that coordinate with ''
+        // Redraw inventory
+
+        let col_index = Math.floor((x - 40) / 42);
+        let row_index = Math.floor((y - 45) / 36);
+
+        let itemToDelete = inventory[row_index][col_index];
+
+        if (['t', 'w', 'm'].includes(itemToDelete)) {
+
+            let foodDeleted = false;
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (inventory[i][j] === itemToDelete) {
+                        inventory[i][j] = '';
+
+                        foodDeleted = true;
+                        break;
+                    }
+                }
+                if (foodDeleted) break;
+            }
+        }
+    }
+
+
+
+    gameTick();
     
 
 
@@ -311,27 +524,32 @@ window.onload = function() {
 
             menuAnimationContext.clearRect(0, 0, menuAnimationCanvas.width, menuAnimationCanvas.height);
 
-            console.log(highlightedOption);
-
             if (imageDrawn === true) {
 
-                if (highlightedOption === "stock up") {
-                    stock_up();
-                }
-                else if (highlightedOption === "vial") {
-                    take_vial();
-                }
-
-                else if (highlightedOption === "tofu") {
-                    take_tofu();
-                }
-
-                else if (highlightedOption === "worms") {
-                    take_worms();
-                }
-
-                else if (highlightedOption === "meat") {
-                    take_meat();
+                switch (highlightedOption) {
+                    case "stock up":
+                        // setTimeout(function() { selectedOption = "stock up" }, ping);
+                        selectedOption = "stock up";
+                        break;
+                    case "vial":
+                        // setTimeout(function() { selectedOption = "vial" }, ping);
+                        selectedOption = "vial";
+                        break;
+                    case "tofu":
+                        // setTimeout(function() { selectedOption = "tofu" }, ping);
+                        selectedOption = "tofu";
+                        break;
+                    case "worms":
+                        // setTimeout(function() { selectedOption = "worms" }, ping);
+                        selectedOption = "worms";
+                        break;
+                    case "meat":
+                        // setTimeout(function() { selectedOption = "meat" }, ping);
+                        selectedOption = "meat";
+                        break;
+                    case "examine":
+                        selectedOption = "examine";
+                        break;
                 }
 
 
@@ -341,18 +559,16 @@ window.onload = function() {
                 else if (highlightedOption === "walk here") {
                     playYellowXAnimation(event);
                 }
-
-                drawInventory();
             }
 
             else if (backgroundContext.isPointInPath(mouseX, mouseY)) {
-                stock_up();
                 playRedXAnimation(event);
-                drawInventory();
+                // setTimeout(function() { selectedOption = "stock up" }, ping);
+                selectedOption = "stock up";
             }
 
             imageDrawn = false;
-            highlightedOption = "stock up";
+            highlightedOption = "none";
 
         }
 
@@ -459,9 +675,23 @@ window.onload = function() {
     });
 
 
-    // inventoryBackgroundCanvas.addEventListener("click", (event) => {
-    //     console.log("invy click");
-    // });
+    inventoryBackgroundCanvas.addEventListener("mousedown", (event) => {
+        if (event.button === 0) {
+
+            const rect = menuAnimationCanvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = Math.floor(event.clientY - rect.top);
+
+            const invyX = mouseX - inventoryTopLeftX;
+            const invyY = mouseY - inventoryTopLeftY;
+    
+
+            if (!isInventoryClickInDeadSpace(invyX, invyY)) {
+                deleteFood(invyX, invyY);
+            }
+            
+        }
+    });
 
 
     reset_button.addEventListener("mousedown", (event) => {
@@ -470,7 +700,7 @@ window.onload = function() {
             inventory = Array.from({ length: rows }, () => Array(cols).fill(""));
             inventory[0][0] = 'h';
 
-            drawInventory();
+            chat = ["", "", "", "", "", "", "", ""];
         }
     });
 
