@@ -60,7 +60,7 @@ window.onload = function() {
 
     const inventoryKeyDropdown = document.getElementById("inventoryKey");
     inventoryKeyDropdown.onchange = ( () => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
             spellsKeyDropdown[i].disabled = false;
             if (spellsKeyDropdown[i].value === inventoryKeyDropdown.value) {
                 spellsKeyDropdown[i].disabled = true;
@@ -71,7 +71,7 @@ window.onload = function() {
 
     const spellsKeyDropdown = document.getElementById("spellsKey");
     spellsKeyDropdown.onchange = ( () => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
             inventoryKeyDropdown[i].disabled = false;
             if (inventoryKeyDropdown[i].value === spellsKeyDropdown.value) {
                 inventoryKeyDropdown[i].disabled = true;
