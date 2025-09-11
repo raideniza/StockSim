@@ -357,8 +357,7 @@ window.onload = function() {
     }
 
 
-    function drawInventory() {
-
+    function processVialDestroy() {
         if (queueVialDestroy === true) {
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
@@ -370,6 +369,10 @@ window.onload = function() {
             }
             queueVialDestroy = false;
         }
+    }
+
+
+    function drawInventory() {
 
         inventoryAnimationContext.clearRect(0, 0, inventoryAnimationCanvas.width, inventoryAnimationCanvas.height);
         for (let i = 0; i < rows; i++) {
@@ -458,6 +461,7 @@ window.onload = function() {
     function gameTick() {
         setInterval(() => {
 
+            processVialDestroy();
             processAlch();
             processStock();
             if (currentTab === 'inventory') { drawInventory(); }
