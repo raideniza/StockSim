@@ -8,8 +8,11 @@
 </head>
 <body>
     <div id="instructionsContainer">
+        <h4>This is a healer stocking sim designed to allow you to practice and theorize different kinds of stock techniques</h1>
         <ul>
-            <li>Do some stocking, I dunno</li>
+            <li>You can use the dispenser, delete food, destroy the vial, and alch items</li>
+            <li>Clicking on an item will destroy it. You do not need to hold shift</li>
+            <li>Clicking the reset button will reset the inventory to normal</li>
         </ul>
     </div>
 
@@ -25,9 +28,25 @@
             <option value="No Highlight" selected>Off</option>
             <option value="Highlight">On</option>
         </select>
+        <label for="inventoryKey">Inventory Key:</label>
+        <select id="inventoryKey" autocomplete="off">
+            <option value="F1" selected>F1</option>
+            <option value="F2">F2</option>
+            <option value="F3">F3</option>
+            <option value="F4" disabled>F4</option>
+            <option value="F5">F5</option>
+        </select>
+        <label for="spellsKey">Spells Key:</label>
+        <select id="spellsKey" autocomplete="off">
+            <option value="F1" disabled>F1</option>
+            <option value="F2">F2</option>
+            <option value="F3">F3</option>
+            <option value="F4" selected>F4</option>
+            <option value="F5">F5</option>
+        </select>
     </div>
 
-    <div class="slider-container">
+    <!-- <div class="slider-container">
         <div class="slider">
             <label for="ping">Ping (Not Used Yet)</label>
             <input autocomplete="off" type="range" id="ping" min="0" max="300" value="50">
@@ -37,7 +56,7 @@
                 <span>300</span>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <button class="reset_button" id="reset_button">Reset Inventory</button>
 
@@ -46,16 +65,20 @@
             style="z-index: 1; position:absolute; left:0px; top:0px;"
             height="565px" width="790px">
         </canvas>
+        <canvas id="backgroundAnimationCanvas"
+            style="z-index: 2; pointer-events: none; position:absolute; left:0px; top:0px;"
+            height="565px" width="790px">
+        </canvas>
         <canvas id="inventoryBackgroundCanvas"
-            style="z-index: 2; position:absolute; left:550px; top:230px;"
+            style="z-index: 3; position:absolute; left:550px; top:230px;"
             height="334px" width="239px">
         </canvas>
         <canvas id="chatCanvas"
-            style="z-index: 3; pointer-events: none; position:absolute; left:11px; top:408px;"
-            height="113px" width="488px">
+            style="z-index: 4; pointer-events: none; position:absolute; left:0px; top:400px;"
+            height="142px" width="519px">
         </canvas>
         <canvas id="menuAnimationCanvas"
-            style="z-index: 4; pointer-events: none; position:absolute; left:0px; top:0px;"
+            style="z-index: 6; pointer-events: none; position:absolute; left:0px; top:0px;"
             height="565px" width="790px">
         </canvas>
         <canvas id="inventoryAnimationCanvas"
@@ -63,7 +86,7 @@
             height="334px" width="239px">
         </canvas>
         <canvas id="tickCounterCanvas"
-            style="z-index: 6; position: absolute; left:710px; top:190px;"
+            style="z-index: 7; position: absolute; left:710px; top:190px;"
             height="25px" width="25">
         </canvas>
     </div>
