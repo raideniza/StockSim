@@ -441,7 +441,7 @@ window.onload = function() {
             if (alchTickDelay === 0) {
                 deleteItem(alchxCoord, alchyCoord);
                 queueAlch = false;
-                alchTickDelay = 4;
+                alchTickDelay = 3;
                 startAnimating(15);
                 if (currentTab === 'inventory') {
                     swapTab();
