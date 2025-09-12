@@ -25,7 +25,6 @@ window.onload = function() {
 
     var currentTab = 'inventory';
     var queueAlch = false;
-    var queueAlchAnimation = false;
     var queueVialDestroy = false;
     var queueVialInterface = false;
     var isvialDestroyInterfaceOpen = false;
@@ -802,6 +801,7 @@ window.onload = function() {
 
             imageDrawn = false;
             highlightedOption = "none";
+            queueAlch = false;
 
         }
 
