@@ -959,6 +959,7 @@ window.onload = function() {
             queueVialInterface = false;
             alchSelected = false;
             queueAlch = false;
+            alchTickDelay = 0;
         }
     });
 
