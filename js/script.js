@@ -702,8 +702,7 @@ window.onload = function() {
             queueVialInterface = true;
         }
 
-        else {
-            console.log("click");
+        else { // no item clicked
             queueAlch = false;
         }
     }
@@ -801,7 +800,10 @@ window.onload = function() {
 
             imageDrawn = false;
             highlightedOption = "none";
-            queueAlch = false;
+            
+            if (alchTickDelay > 0) {
+                queueAlch = false;
+            }
 
         }
 
