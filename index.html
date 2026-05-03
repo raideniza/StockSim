@@ -9,11 +9,11 @@
 <body>
     <div id="instructionsContainer">
         <h4>This is a healer stocking sim designed to allow you to practice and theorize different kinds of stock techniques</h1>
-        <ul>
+        <!-- <ul>
             <li>You can use the dispenser, delete food, destroy the vial, and alch items</li>
             <li>Clicking on an item will destroy it. You do not need to hold shift</li>
             <li>Clicking the reset button will reset the inventory to normal</li>
-        </ul>
+        </ul> -->
     </div>
 
     <div class="options-container">
@@ -48,17 +48,17 @@
         </select>
     </div>
 
-    <!-- <div class="slider-container">
+    <div class="slider-container">
         <div class="slider">
-            <label for="ping">Ping (Not Used Yet)</label>
-            <input autocomplete="off" type="range" id="ping" min="0" max="300" value="50">
+            <label for="ping">Ping</label>
+            <input autocomplete="off" type="range" id="ping" min="0" max="400" value="50">
             <div class="values">
                 <span>0</span>
                 <span id="ping-value">50 ms</span>
-                <span>300</span>
+                <span>400</span>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <button class="reset_button" id="reset_button">Reset Inventory</button>
 
@@ -79,18 +79,27 @@
             style="z-index: 4; pointer-events: none; position:absolute; left:0px; top:400px;"
             height="142px" width="519px">
         </canvas>
+        <canvas id="inventoryAnimationCanvas"
+            style="z-index: 5; pointer-events: none; position:absolute; left:550px; top:230px;"
+            height="334px" width="239px">
+        </canvas>
         <canvas id="menuAnimationCanvas"
             style="z-index: 6; pointer-events: none; position:absolute; left:0px; top:0px;"
             height="565px" width="790px">
         </canvas>
-        <canvas id="inventoryAnimationCanvas"
-            style="z-index: 5; pointer-events: none; position:absolute; left:550px; top:230px;"
-            height="334px" width="239px">
+        <canvas id="effectsAnimationCanvas"
+            style="z-index: 3; pointer-events: none; position:absolute; left:0px; top:0px;"
+            height="565px" width="790px">
         </canvas>
         <canvas id="tickCounterCanvas"
             style="z-index: 7; position: absolute; left:710px; top:190px;"
             height="25px" width="25">
         </canvas>
     </div>
+    <!-- Hidden video elements -->
+    <video id="yellow_x" src="assets/Animations/yellow_click.webm" preload="auto" style="display:none;"></video>
+    <video id="red_x" src="assets/Animations/red_click.webm" preload="auto" style="display:none;"></video>
+     <!-- <video id="red_x" src="assets/Animations/output.webm" preload="auto" style="display:none;"></video> -->
+    <video id="alch" src="assets/Animations/alch_animation.webm" preload="auto" style="display:none;"></video>
 </body>
 </html>
