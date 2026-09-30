@@ -685,6 +685,22 @@ window.onload = function() {
 
 
     document.addEventListener("keydown", (event) => {
+        
+        if (event.key === " ") {
+            event.preventDefault();
+            inventory = Array.from({ length: rows }, () => Array(cols).fill(""));
+            inventory[0][0] = 'h';
+
+            chat = ["", "", "", "", "", "", "", ""];
+            isvialDestroyInterfaceOpen = false;
+            isVialClicked = false;
+            queueVialDestroy = false;
+            queueVialInterface = false;
+            alchSelected = false;
+            queueAlch = false;
+            alchTickDelay = 0;
+        }
+
         if (event.key === inventoryKeybind) {
             event.preventDefault();
             if (currentTab === 'spells') { swapTab(); }
